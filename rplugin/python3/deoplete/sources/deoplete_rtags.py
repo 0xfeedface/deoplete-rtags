@@ -3,7 +3,7 @@ import json
 from pprint import pprint
 from subprocess import Popen, PIPE
 
-from deoplete.sources.base import Base
+from deoplete.source.base import Base
 
 current = __file__
 
@@ -39,51 +39,50 @@ class Source(Base):
         stdout_data, stderr_data = p.communicate(input=text.encode("utf-8"))
         if stdout_data.decode("utf-8") == "":
             return []
-        completions_json = json.loads(stdout_data.decode("utf-8"))
+        completions_json = json.loads(stdout_data.decode("utf-8")).get("completions")
         completions = []
         for raw_completion in completions_json:
             completion = {'dup': 1}
-            if raw_completion['k'] == "VarDecl":
-                completion['abbr'] = "[V] " + raw_completion['c']
-                completion['word'] = raw_completion['c']
-                completion['kind'] = raw_completion['k']
-                completion['menu'] = raw_completion['comm']
-            elif raw_completion['k'] == "ParmDecl":
-                completion['kind'] = " ".join(raw_completion['s'].split(" ")[:-1])
-                completion['word'] = raw_completion['c']
-                completion['abbr'] = "[P] " + raw_completion['c']
-                completion['menu'] = raw_completion['comm']
-            elif raw_completion['k'] == "FieldDecl":
-                completion['kind'] = " ".join(raw_completion['s'].split(" ")[:-1])
-                completion['word'] = raw_completion['c']
-                completion['abbr'] = "[S] " + raw_completion['c']
-                completion['menu'] = raw_completion['comm']
-            elif raw_completion['k'] == "FunctionDecl":
-                completion['kind'] = raw_completion['s']
-                completion['word'] = raw_completion['c'] + "("
-                completion['abbr'] = "[F] " + raw_completion['c'] + "("
-                completion['menu'] = raw_completion['comm']
-            elif raw_completion['k'] == "CXXMethod":
-                completion['kind'] = raw_completion['s']
-                completion['word'] = raw_completion['c'] + "("
-                completion['abbr'] = "[M] " + raw_completion['c'] + "("
-                completion['menu'] = raw_completion['comm']
-            elif raw_completion['k'] == "NotImplemented":
-                completion['word'] = raw_completion['c']
-                completion['abbr'] = "[K] " + raw_completion['c']
+            if raw_completion['kind'] == "VarDecl":
+                completion['kind'] = raw_completion['kind']
+                completion['word'] = raw_completion['completion']
+                completion['abbr'] = "[V] " + raw_completion['signature']
+                completion['menu'] = raw_completion['signature']
+            elif raw_completion['kind'] == "ParmDecl":
+                completion['kind'] = " ".join(raw_completion['signature'].split(" ")[:-1])
+                completion['word'] = raw_completion['completion']
+                completion['abbr'] = "[P] " + raw_completion['signature']
+                completion['menu'] = raw_completion['signature']
+            elif raw_completion['kind'] == "FieldDecl":
+                completion['kind'] = " ".join(raw_completion['signature'].split(" ")[:-1])
+                completion['word'] = raw_completion['completion']
+                completion['abbr'] = "[S] " + raw_completion['signature']
+                completion['menu'] = raw_completion['signature']
+            elif raw_completion['kind'] == "FunctionDecl":
+                completion['kind'] = raw_completion['signature']
+                completion['word'] = raw_completion['completion'] + "("
+                completion['abbr'] = "[F] " + raw_completion['signature'] + "("
+                completion['menu'] = raw_completion['signature']
+            elif raw_completion['kind'] == "CXXMethod":
+                completion['kind'] = raw_completion['signature']
+                completion['word'] = raw_completion['completion'] + "("
+                completion['abbr'] = "[M] " + raw_completion['signature'] + "("
+                completion['menu'] = raw_completion['signature']
+            elif raw_completion['kind'] == "NotImplemented":
+                completion['word'] = raw_completion['completion']
+                completion['abbr'] = "[K] " + raw_completion['signature']
             else:
-                completion['word'] = raw_completion['c']
-                completion['menu'] = raw_completion['comm']
-                completion['kind'] = raw_completion['k']
+                completion['word'] = raw_completion['completion']
+                completion['menu'] = raw_completion['signature']
+                completion['kind'] = raw_completion['kind']
             completions.append(completion)
 
         return completions
 
     def get_rc_command(self, file_name, line, column, offset):
         # TODO change string to table
-        command = "rc --absolute-path --synchronous-completions"
-        command += " --json-completions"
-        command += " -l {filename}:{line}:{column}"
+        command = "rc --absolute-path --synchronous-completions --json"
+        command += " --code-complete-at {filename}:{line}:{column}"
         command += " --unsaved-file={filename}:{offset}"
         formated_command = command.format(filename=file_name,
                                           line=line,
