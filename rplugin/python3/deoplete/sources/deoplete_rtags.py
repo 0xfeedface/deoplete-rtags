@@ -43,39 +43,47 @@ class Source(Base):
         completions = []
         for raw_completion in completions_json:
             completion = {'dup': 1}
-            if raw_completion['kind'] == "VarDecl":
-                completion['kind'] = raw_completion['kind']
-                completion['word'] = raw_completion['completion']
-                completion['abbr'] = "[V] " + raw_completion['signature']
-                completion['menu'] = raw_completion['signature']
-            elif raw_completion['kind'] == "ParmDecl":
-                completion['kind'] = " ".join(raw_completion['signature'].split(" ")[:-1])
-                completion['word'] = raw_completion['completion']
-                completion['abbr'] = "[P] " + raw_completion['signature']
-                completion['menu'] = raw_completion['signature']
-            elif raw_completion['kind'] == "FieldDecl":
-                completion['kind'] = " ".join(raw_completion['signature'].split(" ")[:-1])
-                completion['word'] = raw_completion['completion']
-                completion['abbr'] = "[S] " + raw_completion['signature']
-                completion['menu'] = raw_completion['signature']
-            elif raw_completion['kind'] == "FunctionDecl":
-                completion['kind'] = raw_completion['signature']
-                completion['word'] = raw_completion['completion'] + "("
-                completion['abbr'] = "[F] " + raw_completion['signature'] + "("
-                completion['menu'] = raw_completion['signature']
-            elif raw_completion['kind'] == "CXXMethod":
-                completion['kind'] = raw_completion['signature']
-                completion['word'] = raw_completion['completion'] + "("
-                completion['abbr'] = "[M] " + raw_completion['signature'] + "("
-                completion['menu'] = raw_completion['signature']
-            elif raw_completion['kind'] == "NotImplemented":
-                completion['word'] = raw_completion['completion']
-                completion['abbr'] = "[K] " + raw_completion['signature']
-            else:
-                completion['word'] = raw_completion['completion']
-                completion['menu'] = raw_completion['signature']
-                completion['kind'] = raw_completion['kind']
+            completion = {
+                'dup': 1,
+                'kind': 'kind',
+                'word': 'word',
+                'abbr': 'abbr',
+                'menu': 'menu',
+                }
             completions.append(completion)
+            #  if raw_completion['kind'] == "VarDecl":
+                #  completion['kind'] = raw_completion['kind']
+                #  completion['word'] = raw_completion['completion']
+                #  completion['abbr'] = "[V] " + raw_completion['signature']
+                #  completion['menu'] = raw_completion['signature']
+            #  elif raw_completion['kind'] == "ParmDecl":
+                #  completion['kind'] = " ".join(raw_completion['signature'].split(" ")[:-1])
+                #  completion['word'] = raw_completion['completion']
+                #  completion['abbr'] = "[P] " + raw_completion['signature']
+                #  completion['menu'] = raw_completion['signature']
+            #  elif raw_completion['kind'] == "FieldDecl":
+                #  completion['kind'] = " ".join(raw_completion['signature'].split(" ")[:-1])
+                #  completion['word'] = raw_completion['completion']
+                #  completion['abbr'] = "[S] " + raw_completion['signature']
+                #  completion['menu'] = raw_completion['signature']
+            #  elif raw_completion['kind'] == "FunctionDecl":
+                #  completion['kind'] = raw_completion['signature']
+                #  completion['word'] = raw_completion['completion'] + "("
+                #  completion['abbr'] = "[F] " + raw_completion['signature'] + "("
+                #  completion['menu'] = raw_completion['signature']
+            #  elif raw_completion['kind'] == "CXXMethod":
+                #  completion['kind'] = raw_completion['signature']
+                #  completion['word'] = raw_completion['completion'] + "("
+                #  completion['abbr'] = "[M] " + raw_completion['signature'] + "("
+                #  completion['menu'] = raw_completion['signature']
+            #  elif raw_completion['kind'] == "NotImplemented":
+                #  completion['word'] = raw_completion['completion']
+                #  completion['abbr'] = "[K] " + raw_completion['signature']
+            #  else:
+                #  completion['word'] = raw_completion['completion']
+                #  completion['menu'] = raw_completion['signature']
+                #  completion['kind'] = raw_completion['kind']
+            #  completions.append(completion)
 
         return completions
 
